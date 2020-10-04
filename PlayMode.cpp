@@ -9,6 +9,10 @@
 #include "data_path.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#include <hb.h>
+#include <hb-ft.h>
 
 #include <random>
 
@@ -62,6 +66,56 @@ PlayMode::PlayMode() : scene(*hexapod_scene) {
 	//start music loop playing:
 	// (note: position will be over-ridden in update())
 	leg_tip_loop = Sound::loop_3D(*dusty_floor_sample, 1.0f, get_leg_tip_position(), 10.0f);
+
+	// ------- Sample code to test harfbuzz + freetype -----------
+
+	hb_buffer_t *buf;
+	buf = hb_buffer_create();
+	hb_buffer_add_utf8(buf, "Sample Text", -1, 0, -1);
+
+	hb_buffer_set_direction(buf, HB_DIRECTION_LTR);
+	hb_buffer_set_script(buf, HB_SCRIPT_LATIN);
+	hb_buffer_set_language(buf, hb_language_from_string("en", -1));
+
+	FT_Library  library;
+	FT_Face     face;
+	
+	auto error = FT_Init_FreeType( &library );
+	if ( error )
+	{ std::cout << error << std::endl; }
+
+	error = FT_New_Face( library, data_path("American Desktop.ttf").c_str(), 0, &face );
+	if ( error )
+	{ std::cout << error << std::endl; }
+
+	FT_Set_Char_Size(face, 0, 1000, 0, 0);
+
+	hb_font_t *font = hb_ft_font_create(face, nullptr);
+
+	hb_shape(font, buf, NULL, 0);
+
+	unsigned int glyph_count;
+	hb_glyph_info_t *glyph_info    = hb_buffer_get_glyph_infos(buf, &glyph_count);
+	hb_glyph_position_t *glyph_pos = hb_buffer_get_glyph_positions(buf, &glyph_count);
+	double cursor_x = 0.0, cursor_y = 0.0;
+
+	for (unsigned int i = 0; i < glyph_count; ++i) {
+		auto glyphid = glyph_info[i].codepoint;
+		auto x_offset = glyph_pos[i].x_offset / 64.0;
+		auto y_offset = glyph_pos[i].y_offset / 64.0;
+		auto x_advance = glyph_pos[i].x_advance / 64.0;
+		auto y_advance = glyph_pos[i].y_advance / 64.0;
+		// draw_glyph(glyphid, cursor_x + x_offset, cursor_y + y_offset);
+		std::cout<< glyphid << "|" << cursor_x + x_offset << ", " << cursor_y + y_offset << std::endl;
+
+		cursor_x += x_advance;
+		cursor_y += y_advance;
+	}
+
+	hb_buffer_destroy(buf);
+	hb_font_destroy(font);
+
+	// ------ End sample code ----------
 }
 
 PlayMode::~PlayMode() {
