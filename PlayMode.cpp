@@ -9,10 +9,6 @@
 #include "data_path.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
-#include <ft2build.h>
-#include FT_FREETYPE_H
-#include <hb.h>
-#include <hb-ft.h>
 
 #include <random>
 
@@ -69,7 +65,6 @@ PlayMode::PlayMode() : scene(*hexapod_scene) {
 
 	// ------- Sample code to test harfbuzz + freetype -----------
 
-	hb_buffer_t *buf;
 	buf = hb_buffer_create();
 	hb_buffer_add_utf8(buf, "Sample Text", -1, 0, -1);
 
@@ -88,29 +83,18 @@ PlayMode::PlayMode() : scene(*hexapod_scene) {
 	if ( error )
 	{ std::cout << error << std::endl; }
 
-	FT_Set_Char_Size(face, 0, 1000, 0, 0);
+	error = FT_Set_Char_Size( face, 0, 16*64, 0, 0 );
+	if ( error )
+	{ std::cout << error << std::endl; }
 
-	hb_font_t *font = hb_ft_font_create(face, nullptr);
+	font = hb_ft_font_create(face, nullptr);
 
 	hb_shape(font, buf, NULL, 0);
-
-	unsigned int glyph_count;
-	hb_glyph_info_t *glyph_info    = hb_buffer_get_glyph_infos(buf, &glyph_count);
-	hb_glyph_position_t *glyph_pos = hb_buffer_get_glyph_positions(buf, &glyph_count);
-	double cursor_x = 0.0, cursor_y = 0.0;
-
-	for (unsigned int i = 0; i < glyph_count; ++i) {
-		auto glyphid = glyph_info[i].codepoint;
-		auto x_offset = glyph_pos[i].x_offset / 64.0;
-		auto y_offset = glyph_pos[i].y_offset / 64.0;
-		auto x_advance = glyph_pos[i].x_advance / 64.0;
-		auto y_advance = glyph_pos[i].y_advance / 64.0;
-		// draw_glyph(glyphid, cursor_x + x_offset, cursor_y + y_offset);
-		std::cout<< glyphid << "|" << cursor_x + x_offset << ", " << cursor_y + y_offset << std::endl;
-
-		cursor_x += x_advance;
-		cursor_y += y_advance;
-	}
+	
+	GLuint textureId;
+	glGenTextures(1, &textureId);
+	glBindTexture(GL_TEXTURE_2D, textureId);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, glyph->width, glyph->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, glyph->buffer);
 
 	hb_buffer_destroy(buf);
 	hb_font_destroy(font);
@@ -281,10 +265,35 @@ void PlayMode::draw(glm::uvec2 const &drawable_size) {
 			glm::vec3(H, 0.0f, 0.0f), glm::vec3(0.0f, H, 0.0f),
 			glm::u8vec4(0xff, 0xff, 0xff, 0x00));
 	}
+
+	unsigned int glyph_count;
+	hb_glyph_info_t *glyph_info    = hb_buffer_get_glyph_infos(buf, &glyph_count);
+	hb_glyph_position_t *glyph_pos = hb_buffer_get_glyph_positions(buf, &glyph_count);
+	double cursor_x = 0.0, cursor_y = 0.0;
+
+	for (unsigned int i = 0; i < glyph_count; ++i) {
+		auto glyphid = glyph_info[i].codepoint;
+		auto x_offset = glyph_pos[i].x_offset / 64.0;
+		auto y_offset = glyph_pos[i].y_offset / 64.0;
+		auto x_advance = glyph_pos[i].x_advance / 64.0;
+		auto y_advance = glyph_pos[i].y_advance / 64.0;
+
+		draw_glyph(glyphid, cursor_x + x_offset, cursor_y + y_offset);
+		std::cout<< glyphid << "|" << cursor_x + x_offset << ", " << cursor_y + y_offset << std::endl;
+
+		cursor_x += x_advance;
+		cursor_y += y_advance;
+	}
+
 	GL_ERRORS();
 }
 
 glm::vec3 PlayMode::get_leg_tip_position() {
 	//the vertex position here was read from the model in blender:
 	return lower_leg->make_local_to_world() * glm::vec4(-1.26137f, -11.861f, 0.0f, 1.0f);
+}
+
+void PlayMode::draw_glyph(hb_codepoint_t glyphid, float xpos, float ypos)
+{
+	
 }

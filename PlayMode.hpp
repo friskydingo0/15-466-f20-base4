@@ -8,6 +8,11 @@
 #include <vector>
 #include <deque>
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#include <hb.h>
+#include <hb-ft.h>
+
 struct PlayMode : Mode {
 	PlayMode();
 	virtual ~PlayMode();
@@ -45,4 +50,9 @@ struct PlayMode : Mode {
 	//camera:
 	Scene::Camera *camera = nullptr;
 
+	// font stuff
+	hb_buffer_t *buf;
+	hb_font_t *font;
+
+	void draw_glyph(hb_codepoint_t glyphid, float xpos, float ypos);
 };
