@@ -11,3 +11,6 @@ scenes/show-meshes*
 scenes/show-scene*
 *.blend[0-9]
 .vscode/c_cpp_properties.json
+.vs/
+CppProperties.json
+rebuild.bat
