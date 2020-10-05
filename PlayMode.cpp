@@ -66,14 +66,13 @@ PlayMode::PlayMode() : scene(*hexapod_scene) {
 	// ------- Sample code to test harfbuzz + freetype -----------
 
 	buf = hb_buffer_create();
-	hb_buffer_add_utf8(buf, "Sample Text", -1, 0, -1);
-
+	hb_buffer_add_utf8(buf, "Sampler", -1, 0, -1);
+	
 	hb_buffer_set_direction(buf, HB_DIRECTION_LTR);
 	hb_buffer_set_script(buf, HB_SCRIPT_LATIN);
 	hb_buffer_set_language(buf, hb_language_from_string("en", -1));
 
 	FT_Library  library;
-	FT_Face     face;
 	
 	auto error = FT_Init_FreeType( &library );
 	if ( error )
@@ -90,14 +89,66 @@ PlayMode::PlayMode() : scene(*hexapod_scene) {
 	font = hb_ft_font_create(face, nullptr);
 
 	hb_shape(font, buf, NULL, 0);
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
+
+	FT_GlyphSlot slot = face->glyph;
 	
-	GLuint textureId;
-	glGenTextures(1, &textureId);
-	glBindTexture(GL_TEXTURE_2D, textureId);
-	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, glyph->width, glyph->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, glyph->buffer);
+	hb_glyph_info_t *glyph_info    = hb_buffer_get_glyph_infos(buf, &glyph_count);
+	hb_glyph_position_t *glyph_pos = hb_buffer_get_glyph_positions(buf, &glyph_count);
+	double cursor_x = 0.0, cursor_y = 0.0;
+
+	for (unsigned int i = 0; i < glyph_count; ++i) {
+		auto glyphid = glyph_info[i].codepoint;
+		auto x_offset = glyph_pos[i].x_offset / 64.0;
+		auto y_offset = glyph_pos[i].y_offset / 64.0;
+		auto x_advance = glyph_pos[i].x_advance / 64.0;
+		auto y_advance = glyph_pos[i].y_advance / 64.0;
+
+		if ( FT_Load_Glyph( face, glyphid, FT_LOAD_RENDER ) )
+			std::cout << "ERROR: Couldn't load glyph/bitmap" << std::endl;
+
+		assert(face->glyph != nullptr && "Glyph is not loaded");
+
+		// generate textures for each glyph
+		GLuint textureId;
+		glGenTextures(1, &textureId);
+		glBindTexture(GL_TEXTURE_2D, textureId);
+		glTexImage2D(
+			GL_TEXTURE_2D,
+			0,
+			GL_RGBA,
+			face->glyph->bitmap.width,
+			face->glyph->bitmap.rows,
+			0,
+			GL_RGBA,
+			GL_UNSIGNED_BYTE,
+			face->glyph->bitmap.buffer
+		);
+
+		// set texture options
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		Character font_char = {textureId, x_offset, y_offset, x_advance, y_advance};
+
+		char_map.emplace(glyphid, font_char);
+		
+		std::cout<< glyphid << "|" << cursor_x + x_offset << ", " << cursor_y + y_offset << std::endl;
+
+		cursor_x += x_advance;
+		cursor_y += y_advance;
+	}
+	
+	
 
 	hb_buffer_destroy(buf);
 	hb_font_destroy(font);
+
+	FT_Done_Face(face);
+	FT_Done_FreeType(library);
 
 	// ------ End sample code ----------
 }
@@ -266,9 +317,39 @@ void PlayMode::draw(glm::uvec2 const &drawable_size) {
 			glm::u8vec4(0xff, 0xff, 0xff, 0x00));
 	}
 
-	unsigned int glyph_count;
-	hb_glyph_info_t *glyph_info    = hb_buffer_get_glyph_infos(buf, &glyph_count);
-	hb_glyph_position_t *glyph_pos = hb_buffer_get_glyph_positions(buf, &glyph_count);
+	
+	// int pen_x, pen_y;
+	// pen_x = 300; pen_y = 200;
+	// std::string text = "Hello world";
+	// FT_Error error;
+
+	// for (auto n = 0; n < text.length(); n++ )
+	// {
+	// 	FT_UInt  glyph_index;
+
+	// 	/* retrieve glyph index from character code */
+	// 	glyph_index = FT_Get_Char_Index( face, text[n] );
+
+	// 	/* load glyph image into the slot (erase previous one) */
+	// 	error = FT_Load_Glyph( face, glyph_index, FT_LOAD_DEFAULT );
+	// 	if ( error )
+	// 		std::cout << error << std::endl;
+
+	// 	/* convert to an anti-aliased bitmap */
+	// 	error = FT_Render_Glyph( face->glyph, FT_RENDER_MODE_NORMAL );
+	// 	if ( error )
+	// 		std::cout << error << std::endl;
+
+	// 	/* now, draw to our target surface */
+	// 	draw_glyph( &face->glyph->bitmap,
+	// 					pen_x + face->glyph->bitmap_left,
+	// 					pen_y - face->glyph->bitmap_top );
+
+	// 	/* increment pen position */
+	// 	pen_x += face->glyph->advance.x >> 6;
+	// 	pen_y += face->glyph->advance.y >> 6; /* not useful for now */
+	// }
+
 	double cursor_x = 0.0, cursor_y = 0.0;
 
 	for (unsigned int i = 0; i < glyph_count; ++i) {
@@ -278,7 +359,12 @@ void PlayMode::draw(glm::uvec2 const &drawable_size) {
 		auto x_advance = glyph_pos[i].x_advance / 64.0;
 		auto y_advance = glyph_pos[i].y_advance / 64.0;
 
-		draw_glyph(glyphid, cursor_x + x_offset, cursor_y + y_offset);
+		if ( FT_Load_Glyph( face, glyphid, FT_LOAD_RENDER ) )
+			std::cout << "ERROR: Couldn't load glyph/bitmap" << std::endl;
+
+		assert(face->glyph != nullptr && "Glyph is not loaded");
+
+		draw_glyph(&face->glyph->bitmap, cursor_x + x_offset, cursor_y + y_offset);
 		std::cout<< glyphid << "|" << cursor_x + x_offset << ", " << cursor_y + y_offset << std::endl;
 
 		cursor_x += x_advance;
@@ -293,7 +379,7 @@ glm::vec3 PlayMode::get_leg_tip_position() {
 	return lower_leg->make_local_to_world() * glm::vec4(-1.26137f, -11.861f, 0.0f, 1.0f);
 }
 
-void PlayMode::draw_glyph(hb_codepoint_t glyphid, float xpos, float ypos)
+void PlayMode::draw_glyph(FT_Bitmap* glyph, int xpos, int ypos)
 {
 	
 }

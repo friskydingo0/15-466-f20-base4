@@ -101,10 +101,12 @@ if $(OS) = NT { #Windows
 
 #Store the names of various .cpp files to build into variables:
 GAME_NAMES =
-	PlayMode
+	#PlayMode
+	TextMode
 	main
 	LitColorTextureProgram
-	#ColorTextureProgram #not used right now, but you might want it
+	UnlitFontTextureProgram
+	ColorTextureProgram #not used right now, but you might want it
 	Sound
 	load_wav
 	load_opus
