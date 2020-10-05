@@ -97,6 +97,8 @@ TextMode::TextMode(){
 	FT_Done_FreeType(library);
 }
 
+TextMode::~TextMode() {}
+
 void TextMode::draw(glm::uvec2 const &drawable_size) {
 	
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);

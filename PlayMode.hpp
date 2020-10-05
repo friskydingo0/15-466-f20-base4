@@ -62,8 +62,5 @@ struct PlayMode : Mode {
 	FT_Face face;
 	unsigned int glyph_count;
 
-	// Map of glyph textures for each character
-	std::map<hb_codepoint_t, Character> char_map;
-
 	void draw_glyph(FT_Bitmap* glyph, int xpos, int ypos);
 };

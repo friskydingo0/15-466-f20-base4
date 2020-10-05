@@ -19,8 +19,8 @@ struct TextMode : Mode {
 	virtual ~TextMode();
 
 	//functions called by main loop:
-	virtual bool handle_event(SDL_Event const &, glm::uvec2 const &window_size) override;
-	virtual void update(float elapsed) override;
+	// virtual bool handle_event(SDL_Event const &, glm::uvec2 const &window_size) override;
+	// virtual void update(float elapsed) override;
 	virtual void draw(glm::uvec2 const &drawable_size) override;
 
 	//----- game state -----
@@ -39,5 +39,5 @@ struct TextMode : Mode {
 	// Map of glyph textures for each character
 	std::map<hb_codepoint_t, Character> char_map;
 
-	void draw_text(std::string text, float x, float y, float scale, glm::vec3 color)
+	void draw_text(std::string text, float x, float y, float scale, glm::vec3 color);
 };
