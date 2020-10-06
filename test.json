@@ -1,0 +1,57 @@
+{
+  "start": {
+    "string": [ "BZZRT! BZZRT! BZZRT!\nYou wake up with a groan, your alarm clock sitting on the nightstand near your bed.\nIt reads 6am.\nWhat do you do?" ],
+    "choices": [ "2", "Hit the snooze button a few times", "Force yourself to get up bright and early." ],
+    "results": [ "2", "snooze", "wake up" ]
+  },
+  "snooze": {
+    "string": [ "You hit the snooze button and roll back over, drifting back to sleep.\nYou rinse and repeat this routine about 16 times before you realize..." ],
+    "choices": [ "3", "That you're hungry for breakfast", "Shit! That you're late for training!", "That it's time for more sleep" ],
+    "results": [ "3", "breakfast", "late", "still in bed" ]
+  },
+  "breakfast": {
+    "string": [ "You pull back the bed sheets and stand up.\nYou look at the alarm clock and see that it's only 10am.\nMight as well eat some breakfast." ],
+    "choices": [ "1", "Eat a hardy and meal and then make your way to the gym" ],
+    "results": [ "1", "arrive very late" ]
+  },
+  "wake up": {
+    "string": [ "As much as you'd rather not be up yet, you need to get to the gym.\nYou are, after all, a professional wrestler." ],
+    "choices": [ "1", "Eat a hardy and meal and then make your way to the gym" ],
+    "results": [ "1", "arrive" ]
+  },
+  "late": {
+    "string": [ "Oh crap, you missed your morning workout!\nThere's no time for breakfast!\nOr is there...?" ],
+    "choices": [ "2", "Skip breakfast and then make your way to the gym", "Eat a quick meal and then make your way to the gym" ],
+    "results": [ "2", "arrive late and hungry", "arrive late" ]
+  },
+  "still in bed": {
+    "string": [ "Screw it, you were partying hard last night.\nYou won't be able to train very well this morning anyway.\nYou sleep in a bit longer before finally getting up." ],
+    "choices": [ "1", "Skip breakfast and then make your way to the gym" ],
+    "results": [ "1", "arrive very late and hungry" ]
+  },
+  "arrive": {
+    "string": [ "You arrive at the gym well fed and on time." ],
+    "choices": [ "0" ],
+    "results": [ "0" ]
+  },
+  "arrive late": {
+    "string": [ "You arrive at the gym well fed but late." ],
+    "choices": [ "0" ],
+    "results": [ "0" ]
+  },
+  "arrive late and hungry": {
+    "string": [ "You arrive at the gym late, and you're still hungry to boot." ],
+    "choices": [ "0" ],
+    "results": [ "0" ]
+  },
+  "arrive very late": {
+    "string": [ "You arrive at the gym well fed but embarrassingly late." ],
+    "choices": [ "0" ],
+    "results": [ "0" ]
+  },
+  "arrive very late and hungry": {
+    "string": [ "You arrive at the gym embarrassingly late, and you're still hungry to boot." ],
+    "choices": [ "0" ],
+    "results": [ "0" ]
+  }
+}

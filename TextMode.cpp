@@ -88,16 +88,190 @@ TextMode::TextMode(){
 		cursor_y += y_advance;
 	}
 	
-	
-
 	hb_buffer_destroy(buf);
 	hb_font_destroy(font);
 
 	FT_Done_Face(face);
 	FT_Done_FreeType(library);
+
+	// loading in from a json file
+	try {
+		std::ifstream in("test.json");
+		in >> json;
+	}
+	catch (int e) {
+		std::cout << "A json exception occurred. Your json file is most likely formatted incorrectly. Exception #: " << e << std::endl;
+	}
+
+	// for converting from a string to an int: http://www.cplusplus.com/reference/string/stoi/
+	std::string::size_type sz;   // alias of size_t
+
+	// assigning the start of the json file
+	next_text = "start";
+	json_string = json[next_text]["string"][0];
+	std::cout << std::endl << json_string << std::endl;
+	for (int i = 1; i <= std::stoi((std::string)json[next_text]["choices"][0], &sz); i++) {
+		json_choices.emplace_back((std::string)json[next_text]["choices"][i]);
+		std::cout << i % 10 << ": " << json_choices[i - 1] << std::endl;
+		json_results.emplace_back((std::string)json[next_text]["results"][i]);
+	}
 }
 
 TextMode::~TextMode() {}
+
+bool TextMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
+
+	if (evt.type == SDL_KEYDOWN) {
+		if (evt.key.keysym.sym == SDLK_1 && !one.pressed) {
+			update_json_strings(0);
+			one.downs += 1;
+			one.pressed = true;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_2 && !two.pressed) {
+			update_json_strings(1);
+			two.downs += 1;
+			two.pressed = true;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_3 && !three.pressed) {
+			update_json_strings(2);
+			three.downs += 1;
+			three.pressed = true;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_4 && !four.pressed) {
+			update_json_strings(3);
+			four.downs += 1;
+			four.pressed = true;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_5 && !five.pressed) {
+			update_json_strings(4);
+			five.downs += 1;
+			five.pressed = true;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_6 && !six.pressed) {
+			update_json_strings(5);
+			six.downs += 1;
+			six.pressed = true;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_7 && !seven.pressed) {
+			update_json_strings(6);
+			seven.downs += 1;
+			seven.pressed = true;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_8 && !eight.pressed) {
+			update_json_strings(7);
+			eight.downs += 1;
+			eight.pressed = true;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_9 && !nine.pressed) {
+			update_json_strings(8);
+			nine.downs += 1;
+			nine.pressed = true;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_0 && !zero.pressed) {
+			update_json_strings(9);
+			zero.downs += 1;
+			zero.pressed = true;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_RETURN && !enter.pressed) {
+			if (json_results.size() == 0) {
+				// for converting from a string to an int: http://www.cplusplus.com/reference/string/stoi/
+				std::string::size_type sz;   // alias of size_t
+				next_text = "start";
+				json_string = json[next_text]["string"][0];
+				std::cout << std::endl << json_string << std::endl;
+				for (int i = 1; i <= std::stoi((std::string)json[next_text]["choices"][0], &sz); i++) {
+					json_choices.emplace_back((std::string)json[next_text]["choices"][i]);
+					std::cout << i % 10 << ": " << json_choices[i - 1] << std::endl;
+					json_results.emplace_back((std::string)json[next_text]["results"][i]);
+				}
+			}
+			enter.downs += 1;
+			enter.pressed = true;
+			return true;
+		}
+	}
+	else if (evt.type == SDL_KEYUP) {
+		if (evt.key.keysym.sym == SDLK_1) {
+			one.pressed = false;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_2) {
+			two.pressed = false;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_3) {
+			three.pressed = false;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_4) {
+			four.pressed = false;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_5) {
+			five.pressed = false;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_6) {
+			six.pressed = false;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_7) {
+			seven.pressed = false;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_8) {
+			eight.pressed = false;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_9) {
+			nine.pressed = false;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_0) {
+			zero.pressed = false;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_RETURN) {
+			enter.pressed = false;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void TextMode::update_json_strings(int choice) {
+	if (choice < json_results.size()) {
+		// for converting from a string to an int: http://www.cplusplus.com/reference/string/stoi/
+		std::string::size_type sz;   // alias of size_t
+
+		// for actually displaying the next text line (currently just in the console)
+		next_text = json_results[choice];
+
+		// updating and displaying json_string (in the console)
+		json_string = json[next_text]["string"][0];
+		std::cout << std::endl << json_string << std::endl;
+
+		// updating and displaying json_choices (in the console); updating json_results
+		json_choices.clear();
+		json_results.clear();
+		for (int i = 1; i <= std::stoi((std::string)json[next_text]["choices"][0], &sz); i++) {
+			json_choices.emplace_back((std::string)json[next_text]["choices"][i]);
+			std::cout << i % 10 << ": " << json_choices[i - 1] << std::endl;
+			json_results.emplace_back((std::string)json[next_text]["results"][i]);
+		}
+	}
+}
 
 void TextMode::draw(glm::uvec2 const &drawable_size) {
 	
@@ -113,6 +287,8 @@ void TextMode::draw(glm::uvec2 const &drawable_size) {
 	}
 
 	// Call draw_text()
+
+	GL_ERRORS();
 }
 
 void TextMode::draw_text(std::string text, float x, float y, float scale, glm::vec3 color)

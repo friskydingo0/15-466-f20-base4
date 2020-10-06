@@ -14,16 +14,29 @@
 #include <hb.h>
 #include <hb-ft.h>
 
+#include "json.hpp"
+using JSON = nlohmann::json;
+
+#include <fstream>
+#include <string>
+
 struct TextMode : Mode {
 	TextMode();
 	virtual ~TextMode();
 
 	//functions called by main loop:
-	// virtual bool handle_event(SDL_Event const &, glm::uvec2 const &window_size) override;
-	// virtual void update(float elapsed) override;
+	virtual bool handle_event(SDL_Event const &, glm::uvec2 const &window_size) override;
+	//virtual void update(float elapsed) override;
 	virtual void draw(glm::uvec2 const &drawable_size) override;
 
 	//----- game state -----
+
+	//input tracking:
+	struct Button {
+		uint8_t downs = 0;
+		uint8_t pressed = 0;
+	} one, two, three, four, five, six, seven, eight, nine, zero, enter;
+
 	// font stuff - based on harfbuzz tutorial & https://learnopengl.com/In-Practice/Text-Rendering
 	struct Character{
 		unsigned int textureID;
@@ -40,4 +53,13 @@ struct TextMode : Mode {
 	std::map<hb_codepoint_t, Character> char_map;
 
 	void draw_text(std::string text, float x, float y, float scale, glm::vec3 color);
+
+	// used to hold strings read in from json
+	JSON json;
+	std::string next_text;
+	std::string json_string;
+	std::vector < std::string > json_choices;
+	std::vector < std::string > json_results;
+
+	void update_json_strings(int choice);
 };
