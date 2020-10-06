@@ -27,8 +27,11 @@ struct TextMode : Mode {
 	// font stuff - based on harfbuzz tutorial & https://learnopengl.com/In-Practice/Text-Rendering
 	struct Character{
 		unsigned int textureID;
-		double x_offset, y_offset;
-		double x_advance, y_advance;
+		glm::ivec2   Size;      // Size of glyph
+		glm::ivec2   Bearing;   // Offset from baseline to left/top of glyph
+		unsigned int Advance;   // Horizontal offset to advance to next glyph
+		// double x_offset, y_offset;
+		// double x_advance, y_advance;
 	};
 
 	hb_buffer_t *buf;
@@ -37,7 +40,8 @@ struct TextMode : Mode {
 	unsigned int glyph_count;
 
 	// Map of glyph textures for each character
-	std::map<hb_codepoint_t, Character> char_map;
+	// std::map<hb_codepoint_t, Character> char_map;
+	std::map<GLchar, Character> Characters;
 
 	void draw_text(std::string text, float x, float y, float scale, glm::vec3 color);
 };

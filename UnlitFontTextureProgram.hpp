@@ -16,6 +16,8 @@ struct UnlitFontTextureProgram {
 	//Uniform (per-invocation variable) locations:
 	GLuint OBJECT_TO_CLIP_mat4 = -1U;
 	GLuint textColor_vec3 = -1U;
+
+	unsigned int VAO, VBO;
 };
 
 extern Load< UnlitFontTextureProgram > unlit_font_texture_program;

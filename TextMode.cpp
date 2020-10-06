@@ -32,9 +32,52 @@ TextMode::TextMode(){
 	if ( error )
 	{ std::cout << error << std::endl; }
 
-	font = hb_ft_font_create(face, nullptr);
+	//font = hb_ft_font_create(face, nullptr);
 
-	hb_shape(font, buf, NULL, 0);
+	// Fill the buffer with first 128 characters
+	for (unsigned char c = 0; c < 128; c++)
+	{
+		// std::string cs = ""+c;
+		// hb_buffer_add_utf8(buf, cs.c_str(), -1, 0, -1);
+
+		// Load character glyph 
+		if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+		{
+			std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
+			continue;
+		}
+		// generate texture
+		unsigned int texture;
+		glGenTextures(1, &texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glTexImage2D(
+			GL_TEXTURE_2D,
+			0,
+			GL_RED,
+			face->glyph->bitmap.width,
+			face->glyph->bitmap.rows,
+			0,
+			GL_RED,
+			GL_UNSIGNED_BYTE,
+			face->glyph->bitmap.buffer
+		);
+		// set texture options
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		// now store character for later use
+		Character character = {
+			texture,
+			glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+			glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+			static_cast<unsigned int>(face->glyph->advance.x)
+		};
+		Characters.insert(std::pair<char, Character>(c, character));
+	}
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	/*hb_shape(font, buf, NULL, 0);
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
 
@@ -86,7 +129,7 @@ TextMode::TextMode(){
 
 		cursor_x += x_advance;
 		cursor_y += y_advance;
-	}
+	}*/
 	
 	
 
@@ -101,30 +144,36 @@ TextMode::~TextMode() {}
 
 void TextMode::draw(glm::uvec2 const &drawable_size) {
 	
-	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+	glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 	glClearDepth(1.0f); //1.0 is actually the default value to clear the depth buffer to, but FYI you can change it.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS); //this is the default depth comparison function, but FYI you can change it.
-
-	{ //use DrawLines to overlay some text:
-		glDisable(GL_DEPTH_TEST);
-	}
-
+	
+	glUseProgram(unlit_font_texture_program->program);
+	glm::mat4 projection = glm::ortho(0.0f, float(drawable_size.x), 0.0f, float(drawable_size.y));
+	GLint test = glGetUniformLocation(unlit_font_texture_program->program, "projection");
+	
+	glUniformMatrix4fv(test, 1, GL_FALSE, glm::value_ptr(projection));
+	
 	// Call draw_text()
+	draw_text("This is sample text", 25.0f, 25.0f, 10.0f, glm::vec3(0.5, 0.8f, 0.2f));
+	draw_text("Unshaped txt", drawable_size.x * 0.5f, drawable_size.y * 0.5f, 10, glm::vec3(1.0f,1.0f,1.0f));
+
+	GL_ERRORS();
 }
 
 void TextMode::draw_text(std::string text, float x, float y, float scale, glm::vec3 color)
 {
+	
 	glUseProgram(unlit_font_texture_program->program);
 	
-	
 	// ---------- Work in progress ------------
-	/*glUniform3f(glGetUniformLocation(unlit_font_texture_program->program, "textColor"), color.x, color.y, color.z);
+	glUniform3f(glGetUniformLocation(unlit_font_texture_program->program, "textColor"), color.x, color.y, color.z);
+	
     glActiveTexture(GL_TEXTURE0);
-    glBindVertexArray(VAO);
-
+	
+    glBindVertexArray(unlit_font_texture_program->VAO);
+	GL_ERRORS();
+	std::cout<< "Hit 0" << std::endl;
     // iterate through all characters
     std::string::const_iterator c;
     for (c = text.begin(); c != text.end(); c++) 
@@ -138,20 +187,31 @@ void TextMode::draw_text(std::string text, float x, float y, float scale, glm::v
         float h = ch.Size.y * scale;
         // update VBO for each character
         float vertices[6][4] = {
-            { xpos,     ypos + h,   0.0f, 0.0f },            
-            { xpos,     ypos,       0.0f, 1.0f },
-            { xpos + w, ypos,       1.0f, 1.0f },
+            // { xpos,     ypos + h,   0.0f, 0.0f },            
+            // { xpos,     ypos,       0.0f, 1.0f },
+            // { xpos + w, ypos,       1.0f, 1.0f },
 
-            { xpos,     ypos + h,   0.0f, 0.0f },
-            { xpos + w, ypos,       1.0f, 1.0f },
-            { xpos + w, ypos + h,   1.0f, 0.0f }           
+            // { xpos,     ypos + h,   0.0f, 0.0f },
+            // { xpos + w, ypos,       1.0f, 1.0f },
+            // { xpos + w, ypos + h,   1.0f, 0.0f }    
+			{ 0.0f, 0.0f, 0.0f, 0.0f},
+			{ 0.0f, 1.0f, 0.0f, 0.0f },
+			{ 1.0f, 1.0f, 0.0f, 0.0f },
+
+			{0.0f, 0.0f, 0.0f, 0.0f },{ 0.0f, 0.0f, 0.0f, 0.0f },{ 0.0f, 0.0f, 0.0f, 0.0f },
         };
+
+		std::cout<< "Hit 1" << std::endl;
+
         // render glyph texture over quad
-        glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+        glBindTexture(GL_TEXTURE_2D, ch.textureID);
         // update content of VBO memory
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBindBuffer(GL_ARRAY_BUFFER, unlit_font_texture_program->VBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // be sure to use glBufferSubData and not glBufferData
 
+		
+		glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         // render quad
         glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -159,7 +219,7 @@ void TextMode::draw_text(std::string text, float x, float y, float scale, glm::v
         x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
     }
     glBindVertexArray(0);
-    glBindTexture(GL_TEXTURE_2D, 0);*/
+    glBindTexture(GL_TEXTURE_2D, 0);
 
 	glUseProgram(0);
 }

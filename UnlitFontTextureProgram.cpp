@@ -12,13 +12,10 @@ Load< UnlitFontTextureProgram > unlit_font_texture_program(LoadTagEarly, []() ->
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);	// flat projection for text
-
-	unsigned int VAO, VBO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glGenVertexArrays(1, &ret->VAO);
+	glGenBuffers(1, &ret->VBO);
+	glBindVertexArray(ret->VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, ret->VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
@@ -37,7 +34,9 @@ UnlitFontTextureProgram::UnlitFontTextureProgram() {
 		"uniform mat4 projection;\n"
 		"void main()\n"
 		"{\n"
-		"    gl_Position = projection * vec4(vertex.xy, 0.0, 1.0);\n"
+		// "    gl_Position = projection * vec4(vertex.xy, 0.0, 1.0);\n"
+		"    gl_Position = vec4(vertex.xy, 0.0, 1.0);\n"
+		// "    gl_Position = vec4(gl_VertexID % 2, gl_VertexID / 2, 0, 1);\n"
 		"    TexCoords = vertex.zw;\n"
 		"}\n"
 		,
@@ -50,6 +49,7 @@ UnlitFontTextureProgram::UnlitFontTextureProgram() {
 		"void main()\n"
 		"{\n"
     	"    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoords).r);\n"
+		// "    color = vec4(1,1,0,1);\n"
     	"    color = vec4(textColor, 1.0) * sampled;\n"
 		"}\n"
 	);
