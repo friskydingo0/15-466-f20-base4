@@ -1,10 +1,10 @@
-# (TODO: your game's title)
+# A Day at the Gym
 
-Author: (TODO: your name)
+Author: Tyler Thompson, Pavan Paravasthu
 
-Design: (TODO: In two sentences or fewer, describe what is new and interesting about your game.)
+Design: Take the role of a pro wrestler as he makes his daily visits to the gym. This is a short dating sim where you can date other pro wrestlers.
 
-Text Drawing: (TODO: how does the text drawing in this game work? Is text precomputed? Rendered at runtime? What files or utilities are involved?)
+Text Drawing: Text for the game is taken from a JSON file that is then processed using nlohmann's JSON library, and rendered using harfbuzz + freetype libraries.
 
 Screen Shot:
 
@@ -12,9 +12,11 @@ Screen Shot:
 
 How To Play:
 
-(TODO: describe the controls and (if needed) goals/strategy.)
+Press the corresponding number key on the keyboard to select the choice
 
-Sources: (TODO: list a source URL for any assets you did not create yourself. Make sure you have a license for the asset.)
+Sources: Fonts
+American Desktop.ttf : https://www.1001freefonts.com/american-desktop.font
+(Unused) SansitaSwashed : https://fonts.google.com/specimen/Sansita+Swashed?subset=latin#standard-styles
 
 This game was built with [NEST](NEST.md).
 
