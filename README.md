@@ -14,9 +14,13 @@ How To Play:
 
 Press the corresponding number key on the keyboard to select the choice
 
-Sources: Fonts
+Sources: 
+Fonts:
 American Desktop.ttf : https://www.1001freefonts.com/american-desktop.font
 (Unused) SansitaSwashed : https://fonts.google.com/specimen/Sansita+Swashed?subset=latin#standard-styles
+
+Libraries:
+JSON parsing : https://github.com/nlohmann/json
 
 This game was built with [NEST](NEST.md).
 
