@@ -33,6 +33,38 @@ TextMode::TextMode(){
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
 
 	// End font stuff init
+
+	// loading in from a json file
+	try {
+		std::ifstream in("story.json");
+		in >> json;
+	}
+	catch (int e) {
+		std::cout << "A json exception occurred. Your json file is most likely formatted incorrectly. Exception #: " << e << std::endl;
+	}
+
+	// for converting from a string to an int: http://www.cplusplus.com/reference/string/stoi/
+	std::string::size_type sz;   // alias of size_t
+
+	// assigning the start of the json file
+	next_text = "start";
+	json_string = json[next_text]["string"][0];
+	// code for splitting a string based on a delimiter came from here: https://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c/14266139#14266139
+	std::string delimiter = "\n";
+	size_t pos = 0;
+	std::string token;
+	while ((pos = json_string.find(delimiter)) != std::string::npos) {
+		token = json_string.substr(0, pos);
+		json_string_splits.emplace_back(token);
+		json_string.erase(0, pos + delimiter.length());
+	}
+	// end of code from https://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c/14266139#14266139
+	std::cout << std::endl << json_string << std::endl;
+	for (int i = 1; i <= std::stoi((std::string)json[next_text]["choices"][0], &sz); i++) {
+		json_choices.emplace_back((std::string)json[next_text]["choices"][i]);
+		std::cout << i % 10 << ": " << json_choices[i - 1] << std::endl;
+		json_results.emplace_back((std::string)json[next_text]["results"][i]);
+	}
 }
 
 TextMode::~TextMode() {
@@ -42,6 +74,186 @@ TextMode::~TextMode() {
 	FT_Done_Face(face);
 	FT_Done_FreeType(library);
 }
+
+bool TextMode::handle_event(SDL_Event const& evt, glm::uvec2 const& window_size) {
+
+	if (evt.type == SDL_KEYDOWN) {
+		if (evt.key.keysym.sym == SDLK_1 && !one.pressed) {
+			update_json_strings(0);
+			one.downs += 1;
+			one.pressed = true;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_2 && !two.pressed) {
+			update_json_strings(1);
+			two.downs += 1;
+			two.pressed = true;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_3 && !three.pressed) {
+			update_json_strings(2);
+			three.downs += 1;
+			three.pressed = true;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_4 && !four.pressed) {
+			update_json_strings(3);
+			four.downs += 1;
+			four.pressed = true;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_5 && !five.pressed) {
+			update_json_strings(4);
+			five.downs += 1;
+			five.pressed = true;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_6 && !six.pressed) {
+			update_json_strings(5);
+			six.downs += 1;
+			six.pressed = true;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_7 && !seven.pressed) {
+			update_json_strings(6);
+			seven.downs += 1;
+			seven.pressed = true;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_8 && !eight.pressed) {
+			update_json_strings(7);
+			eight.downs += 1;
+			eight.pressed = true;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_9 && !nine.pressed) {
+			update_json_strings(8);
+			nine.downs += 1;
+			nine.pressed = true;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_0 && !zero.pressed) {
+			update_json_strings(9);
+			zero.downs += 1;
+			zero.pressed = true;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_RETURN && !enter.pressed) {
+			if (json_results.size() == 0) {
+				// for converting from a string to an int: http://www.cplusplus.com/reference/string/stoi/
+				std::string::size_type sz;   // alias of size_t
+				next_text = "start";
+				json_string = json[next_text]["string"][0];
+				json_string_splits.clear();
+				// code for splitting a string based on a delimiter came from here: https://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c/14266139#14266139
+				std::string delimiter = "\n";
+				size_t pos = 0;
+				std::string token;
+				while ((pos = json_string.find(delimiter)) != std::string::npos) {
+					token = json_string.substr(0, pos);
+					json_string_splits.emplace_back(token);
+					json_string.erase(0, pos + delimiter.length());
+				}
+				// end of code from https://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c/14266139#14266139
+				std::cout << std::endl << json_string << std::endl;
+				for (int i = 1; i <= std::stoi((std::string)json[next_text]["choices"][0], &sz); i++) {
+					json_choices.emplace_back((std::string)json[next_text]["choices"][i]);
+					std::cout << i % 10 << ": " << json_choices[i - 1] << std::endl;
+					json_results.emplace_back((std::string)json[next_text]["results"][i]);
+				}
+			}
+			enter.downs += 1;
+			enter.pressed = true;
+			return true;
+		}
+	}
+	else if (evt.type == SDL_KEYUP) {
+		if (evt.key.keysym.sym == SDLK_1) {
+			one.pressed = false;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_2) {
+			two.pressed = false;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_3) {
+			three.pressed = false;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_4) {
+			four.pressed = false;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_5) {
+			five.pressed = false;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_6) {
+			six.pressed = false;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_7) {
+			seven.pressed = false;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_8) {
+			eight.pressed = false;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_9) {
+			nine.pressed = false;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_0) {
+			zero.pressed = false;
+			return true;
+		}
+		else if (evt.key.keysym.sym == SDLK_RETURN) {
+			enter.pressed = false;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void TextMode::update_json_strings(int choice) {
+	if (choice < json_results.size()) {
+		// for converting from a string to an int: http://www.cplusplus.com/reference/string/stoi/
+		std::string::size_type sz;   // alias of size_t
+
+		// for actually displaying the next text line (currently just in the console)
+		next_text = json_results[choice];
+
+		// updating and displaying json_string (in the console)
+		json_string = json[next_text]["string"][0];
+		std::cout << std::endl << json_string << std::endl;
+
+		// updating json_string_splits for the in-game draw_text function
+		json_string_splits.clear();
+		// code for splitting a string based on a delimiter came from here: https://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c/14266139#14266139
+		std::string delimiter = "\n";
+		size_t pos = 0;
+		std::string token;
+		while ((pos = json_string.find(delimiter)) != std::string::npos) {
+			token = json_string.substr(0, pos);
+			json_string_splits.emplace_back(token);
+			json_string.erase(0, pos + delimiter.length());
+		}
+		// end of code from https://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c/14266139#14266139
+
+		// updating and displaying json_choices (in the console); updating json_results
+		json_choices.clear();
+		json_results.clear();
+		for (int i = 1; i <= std::stoi((std::string)json[next_text]["choices"][0], &sz); i++) {
+			json_choices.emplace_back((std::string)json[next_text]["choices"][i]);
+			std::cout << i % 10 << ": " << json_choices[i - 1] << std::endl;
+			json_results.emplace_back((std::string)json[next_text]["results"][i]);
+		}
+	}
+}
+
+void TextMode::update(float elapsed) { }
 
 void TextMode::draw(glm::uvec2 const &drawable_size) {
 	
@@ -57,10 +269,20 @@ void TextMode::draw(glm::uvec2 const &drawable_size) {
 	glUniformMatrix4fv(glGetUniformLocation(unlit_font_texture_program->program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 	
 	// Do all text rendering calls here
-	draw_text("Font name : " + font_name, 25.0f, drawable_size.y * 0.9f, 1.5f, glm::vec3(0.5, 0.8f, 0.2f));
-	
-	draw_text("abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLM􀃺OPQRSTUVWXYZ", 0.0f, drawable_size.y*0.5f, 1.0f, glm::vec3(1.0f,1.0f,0.0f));
-	draw_text("1234567890.:,; ' \" (!?) +-*/=", 0.0f, drawable_size.y * 0.5f - 32.0f, 1.0f, glm::vec3(0.0f,1.0f,1.0f));
+	if (json_string_splits.size() == 0)
+		draw_text(json_string, 25.0f, drawable_size.y * 0.9f, 1.0f, glm::vec3(1.0, 1.0f, 1.0f));
+	else {
+		for (int i = 0; i < json_string_splits.size(); i++)
+			draw_text(json_string_splits[i], 25.0f, drawable_size.y * 0.9f - (32.0f * i), 1.0f, glm::vec3(1.0, 1.0f, 1.0f));
+		if (json_string != "")
+			draw_text(json_string, 25.0f, drawable_size.y * 0.9f - (32.0f * json_string_splits.size()), 1.0f, glm::vec3(1.0, 1.0f, 1.0f));
+	}
+
+	for (int i = 0; i < json_choices.size(); i++) {
+		int choice_number = i % 10 + 1;
+		std::string choice = std::to_string(choice_number) + ": " + json_choices[i];
+		draw_text(choice, 25.0f, drawable_size.y * 0.9f - (32.0f * (i + json_string_splits.size() + 2)), 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+	}
 	
 	glUseProgram(0);
 }
@@ -128,6 +350,10 @@ void TextMode::draw_text(std::string text, float x, float y, float scale, glm::v
 		// Add the rendering code here
 		float xpos = x + x_offset * scale;
         float ypos = y - y_offset * scale;//(ch.Size.y - ch.Bearing.y) * scale;
+		if (text[i] == 'q' || text[i] == 'y' || text[i] == 'p' || text[i] == 'g' || text[i] == 'j' || text[i] == ',')
+			ypos -= 8.0f;
+		if (text[i] == '\'')
+			ypos += 12.0f;
 
         float w = slot->bitmap.width * scale;
         float h = slot->bitmap.rows * scale;

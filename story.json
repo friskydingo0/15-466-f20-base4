@@ -1,0 +1,167 @@
+{
+  "start": {
+    "string": [ "BZZRT! BZZRT! BZZRT!\nYou wake up with a groan.\nYour alarm clock on your nightstand is ringing loudly.\nIt reads 6am.\nWhat do you do?" ],
+    "choices": [ "2", "Force yourself to get up bright and early.", "Hit the snooze button a few times." ],
+    "results": [ "2", "get up", "sleep in" ]
+  },
+  "get up": {
+    "string": [ "You force yourself out of bed.\nYou are a pro wrestler, after all.\nYou need to get to the gym.\nAt the gym, you spot Tim and Bob.\nThey're both also pro wrestlers." ],
+    "choices": [ "2", "Workout with Tim. He's always energetic in the morning.", "Workout with Bob. He's always a good workout partner." ],
+    "results": [ "2", "Tim", "Bob" ]
+  },
+  "Tim": {
+    "string": [ "You walk over to Tim.\nTim: Hey man, nice to see you!\nTim: You're not usually up this early!" ],
+    "choices": [ "2", "Yeah, but I'm trying to be more of a morning person!", "Yeah, I hate mornings." ],
+    "results": [ "2", "morning person", "hate morning" ]
+  },
+  "morning person": {
+    "string": [ "Tim looks happy to hear that.\nTim: You think you'll be able to keep that up?" ],
+    "choices": [ "2", "I'm definitely going to try!", "I doubt it." ],
+    "results": [ "2", "Tim date", "Tim alright" ]
+  },
+  "Tim date": {
+    "string": [ "Tim: Well in that case...\nTim: How about we go out on a date together Saturday morning?\nTim: Ya know, since you're a morning person now." ],
+    "choices": [ "2", "That's a great idea. I'm looking forward to it.", "Nah, I'm usually hungover on Saturday mornings." ],
+    "results": [ "2", "accept", "refuse" ]
+  },
+  "accept": {
+    "string": [ "Come Saturday morning, you and Tim have a great morning date.\nIt's not long before you're in love!" ],
+    "choices": [ "1", "Tim Epilogue" ],
+    "results": [ "1", "Tim ending" ]
+  },
+  "Tim ending": {
+    "string": [ "You and Tim live a long and happy life together.\nThere are a lot of early mornings.\nBut you're happy anyway.\nTHE END. Press Enter to play again." ],
+    "choices": [ "0" ],
+    "results": [ "0" ]
+  },
+  "refuse": {
+    "string": [ "Tim looks visibly deflated.\nTim: Oh, that's fine.\nYou: Sorry. Let's just finish our workout." ],
+    "choices": [ "1", "You awkwardly finish your workout with Tim." ],
+    "results": [ "1", "back to start" ]
+  },
+  "back to start": {
+    "string": [ "You finish your workout and go home.\nAnother day down." ],
+    "choices": [ "1", "Time for a new day!" ],
+    "results": [ "1", "start" ]
+  },
+  "hate morning": {
+    "string": [ "Tim looks confused.\nTim: Really?" ],
+    "choices": [ "2", "Yeah, but I'm trying to do better.", "Yeah, and I hate morning people too!" ],
+    "results": [ "2", "Tim alright", "Tim mad" ]
+  },
+  "Tim alright": {
+    "string": [ "Tim: Fair enough!\nYou and Tim spot each other for the rest of the workout." ],
+    "choices": [ "1", "Finish working out." ],
+    "results": [ "1", "back to start" ]
+  },
+  "Tim mad": {
+    "string": [ "Tim: Well you don't gotta be a dick about it..." ],
+    "choices": [ "1", "You feel bad, but get your workout in anyway." ],
+    "results": [ "1", "back to start" ]
+  },
+  "sleep in": {
+    "string": [ "You're a pro wrestler.\nYou're in great shape.\nThe workout can wait.\nWhen you finally get into the gym, only Bob is there.\nHe's another pro wrestler." ],
+    "choices": [ "2", "Workout with Bob. He's always a good workout partner.", "Workout alone. You're still tired." ],
+    "results": [ "2", "Bob", "workout alone" ]
+  },
+  "Bob": {
+    "string": [ "You walk over to Bob.\nBob: Hey bruh, ready to pump some iron?" ],
+    "choices": [ "2", "You know it! I've got my protein powder and everything!", "I guess. Some weather we're having, huh?" ],
+    "results": [ "2", "workout talk", "small talk" ]
+  },
+  "workout talk": {
+    "string": [ "The two of you discuss workout technique as you lift.\nAfter some time passes...\nBob: Hey bruh, I do a special, secret workout on Saturdays.\nBob: You want in?" ],
+    "choices": [ "2", "Yeah bruh!", "No bruh." ],
+    "results": [ "2", "special workout", "feign interest" ]
+  },
+  "special workout": {
+    "string": [ "Bob gives you an address and a time.\nOn Saturday, you find yourself at a restruant!\nYou and Bob have a great meal together.\nBob: So bruh... is this a date?\nBob: I want it to be, but you need to want it too..." ],
+    "choices": [ "2", "Say it's a date and lean in for a kiss.", "It's not a date, I was just hungry." ],
+    "results": [ "2", "kiss him", "not a date" ]
+  },
+  "kiss him": {
+    "string": [ "Bob: Woah bruh. You're the greatest.\nBob then kisses you back.\nYou continue dating Bob, quickly falling in love." ],
+    "choices": [ "1", "Bob Epilogue" ],
+    "results": [ "1", "Bob ending" ]
+  },
+  "Bob ending": {
+    "string": [ "You and Bob live a long and happy life together.\nHe never stops calling you bruh.\nBut you're happy anyway.\nTHE END. Press Enter to play again." ],
+    "choices": [ "0" ],
+    "results": [ "0" ]
+  },
+  "not a date": {
+    "string": [ "Bob: Oh, that's too bad.\nBob: I get it, but it still sucks.\nBob: See you back at the gym, bruh." ],
+    "choices": [ "1", "You go back to the gym to get a real workout in." ],
+    "results": [ "1", "back to start" ]
+  },
+  "small talk": {
+    "string": [ "Bob immediately seizes up upon hearing you mention the weather.\nHe clearly hates small talk." ],
+    "choices": [ "2", "Bring the conversation back towards working out.", "Keep up the small talk." ],
+    "results": [ "2", "feign interest", "boring" ]
+  },
+  "feign interest": {
+    "string": [ "You and Bob manage to keep a conversation going.\nThere's not a lot of substance to it though.\nYou're both kind of bored by the end." ],
+    "choices": [ "1", "Good talking to you, but I have to go." ],
+    "results": [ "1", "back to start" ]
+  },
+  "boring": {
+    "string": [ "Bob looks like he'd rather be talking to anyone else.\nBob: Uhhh, I gotta go, bruh." ],
+    "choices": [ "1", "You keep working out on your own for a while." ],
+    "results": [ "1", "back to start" ]
+  },
+  "workout alone": {
+    "string": [ "You workout alone for a while.\nEventually Bob leave, but Jason enters the gym.\nHe's another pro wrestler.\nYou could do a second workout with Jason..." ],
+    "choices": [ "2", "Nah, I already worked out today.", "Workout with Jason. He's so mysterious!" ],
+    "results": [ "2", "go home", "Jason" ]
+  },
+  "go gome": {
+    "string": [ "You've got a few reps left.\nBut you plan to go home after that." ],
+    "choices": [ "1", "Time to get those reps in. Alone." ],
+    "results": [ "1", "back to start" ]
+  },
+  "Jason": {
+    "string": [ "You got over to workout with Jason.\nHe doesn't say anything, but he starts spotting you.\nHe's so mysterious!" ],
+    "choices": [ "2", "You have great form. It's impressive.", "Don't try to say anything." ],
+    "results": [ "2", "be nice", "stay quiet" ]
+  },
+  "be nice": {
+    "string": [ "Jason doesn't respond." ],
+    "choices": [ "2", "You should teach me your form. One on one.", "Give up and stop talking." ],
+    "results": [ "2", "too nice", "meh" ]
+  },
+  "too nice": {
+    "string": [ "Jason acknowledges your words for the first time.\nBy rolling his eyes.\nTough luck." ],
+    "choices": [ "1", "Silently nurse your wounded pride." ],
+    "results": [ "1", "back to start" ]
+  },
+  "meh": {
+    "string": [ "You and Jason workout in silence.\nHe's just so damn mysterious!" ],
+    "choices": [ "1", "Oh well. For now he'll stay a mystery." ],
+    "results": [ "1", "back to start" ]
+  },
+  "stay quiet": {
+    "string": [ "You silently start spotting Jason back.\nEventually he speaks!\nJason: Wow. You're mysterious.\nJason: I find mystery kind of attractive.\nJason: Is that weird?" ],
+    "choices": [ "2", "Yes.", "It's not weird at all. You're mysterious too." ],
+    "results": [ "2", "meh", "mystery" ]
+  },
+  "mystery": {
+    "string": [ "Jason blushes when you say that.\nJason: No, I'm just quiet..." ],
+    "choices": [ "2", "Oh. I guess...", "Quiet is just mystery's other half. Let's go out together." ],
+    "results": [ "2", "do not ask", "ask on date" ]
+  },
+  "do not ask": {
+    "string": [ "Well that was awkward.\nThe rest of your workout with Jason is quiet." ],
+    "choices": [ "1", "God, why'd I make this so awkward?" ],
+    "results": [ "1", "back to start" ]
+  },
+  "ask on a date": {
+    "string": [ "That Saturday, you and Jason go on a date.\nA quiet, mysterious date.\nIt's not long before you're in love." ],
+    "choices": [ "1", "Jason Epilogue" ],
+    "results": [ "1", "Jason ending" ]
+  },
+  "Jason ending": {
+    "string": [ "You and Jason live a long and happy life together.\nIt's a quiet life.\nBut you're happy anyway.\nTHE END. Press Enter to play again." ],
+    "choices": [ "0" ],
+    "results": [ "0" ]
+  }
+}
