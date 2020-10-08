@@ -319,7 +319,7 @@ void TextMode::draw_text(std::string text, float x, float y, float scale, glm::v
 		auto x_advance = glyph_pos[i].x_advance / 64.0f;
 		auto y_advance = glyph_pos[i].y_advance / 64.0f;
 
-		// std::cout << x_offset << " " << x_advance << " " << y_offset << " " << y_advance << std::endl;
+		// std::cout << text[i] << " | " << x_offset << " " << x_advance << " " << y_offset << " " << slot->bitmap_top << std::endl;
 
 		if ( FT_Load_Glyph( face, glyphid, FT_LOAD_RENDER ) )
 			std::cout << "ERROR: Couldn't load glyph/bitmap" << std::endl;
@@ -346,14 +346,10 @@ void TextMode::draw_text(std::string text, float x, float y, float scale, glm::v
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
+		
 		// Add the rendering code here
 		float xpos = x + x_offset * scale;
-        float ypos = y - y_offset * scale;//(ch.Size.y - ch.Bearing.y) * scale;
-		if (text[i] == 'q' || text[i] == 'y' || text[i] == 'p' || text[i] == 'g' || text[i] == 'j' || text[i] == ',')
-			ypos -= 8.0f;
-		if (text[i] == '\'')
-			ypos += 12.0f;
+		float ypos = y - (slot->bitmap.rows - slot->bitmap_top) * scale; // Assuming horizontal layout only :(
 
         float w = slot->bitmap.width * scale;
         float h = slot->bitmap.rows * scale;
